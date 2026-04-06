@@ -65,6 +65,21 @@ final class StatusBarController {
                 if windowManager.isOpen(note) {
                     item.state = .on
                 }
+
+                let submenu = NSMenu()
+                let openItem = NSMenuItem(title: "Open", action: #selector(openNoteFromMenu(_:)), keyEquivalent: "")
+                openItem.target = self
+                openItem.representedObject = note
+                submenu.addItem(openItem)
+
+                submenu.addItem(.separator())
+
+                let deleteItem = NSMenuItem(title: "Delete…", action: #selector(deleteNoteFromMenu(_:)), keyEquivalent: "")
+                deleteItem.target = self
+                deleteItem.representedObject = note
+                submenu.addItem(deleteItem)
+
+                item.submenu = submenu
                 menu.addItem(item)
             }
             menu.addItem(.separator())
@@ -100,6 +115,22 @@ final class StatusBarController {
     @objc private func createNewNote() {
         let note = noteManager.createNote()
         windowManager.openNote(note)
+    }
+
+    @objc private func deleteNoteFromMenu(_ sender: NSMenuItem) {
+        guard let note = sender.representedObject as? Note else { return }
+
+        let alert = NSAlert()
+        alert.messageText = "Delete \"\(note.displayTitle)\"?"
+        alert.informativeText = "This cannot be undone."
+        alert.alertStyle = .warning
+        alert.addButton(withTitle: "Delete")
+        alert.addButton(withTitle: "Cancel")
+
+        if alert.runModal() == .alertFirstButtonReturn {
+            windowManager.closeNote(note)
+            noteManager.deleteNote(note)
+        }
     }
 
     @objc private func toggleLaunchAtLogin(_ sender: NSMenuItem) {

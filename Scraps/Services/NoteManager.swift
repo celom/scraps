@@ -43,6 +43,12 @@ final class NoteManager {
         return note
     }
 
+    func deleteNote(_ note: Note) {
+        modelContext.delete(note)
+        try? modelContext.save()
+        loadNotes()
+    }
+
     func save() {
         try? modelContext.save()
     }
