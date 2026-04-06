@@ -19,6 +19,10 @@ final class NotePanel: NSPanel {
         backgroundColor = .clear
         hasShadow = true
 
+        standardWindowButton(.closeButton)?.isHidden = true
+        standardWindowButton(.miniaturizeButton)?.isHidden = true
+        standardWindowButton(.zoomButton)?.isHidden = true
+
         let hostingView = NSHostingView(
             rootView: NoteEditorView(
                 note: note,
