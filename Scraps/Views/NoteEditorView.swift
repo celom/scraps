@@ -44,7 +44,7 @@ struct NoteEditorView: View {
     }
 
     private var toolbar: some View {
-        HStack(spacing: 8) {
+        HStack(spacing: 4) {
             if showPinButton {
                 Button(action: {
                     note.isPinned.toggle()
@@ -94,7 +94,7 @@ struct NoteEditorView: View {
         TextEditor(text: $note.content)
             .font(.system(size: note.fontSize))
             .scrollContentBackground(.hidden)
-            .padding(8)
+            .padding(12)
             .onChange(of: note.content) {
                 note.updatedAt = .now
                 onSave()
@@ -106,7 +106,7 @@ struct NoteEditorView: View {
             Text(MarkdownRenderer.render(note.content, fontSize: note.fontSize))
                 .textSelection(.enabled)
                 .frame(maxWidth: .infinity, alignment: .leading)
-                .padding(8)
+                .padding(12)
         }
     }
 
