@@ -8,11 +8,13 @@
 
 /* Begin PBXBuildFile section */
 		2F6AF9E29D6309C69B970F90 /* NoteModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED93F4C39D52526701155F2F /* NoteModelTests.swift */; };
+		41994A3D70D1A2C76AA68CDF /* WindowManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A16183AEDB532507302E6936 /* WindowManager.swift */; };
 		490E65ACCD64453E9F56B9A5 /* NoteEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22B09D62FE3EFA177C5D6DE4 /* NoteEditorView.swift */; };
 		7C2D0294D5510E4FB10D3526 /* NoteManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90E92D24708A31B3E55D7CBC /* NoteManager.swift */; };
 		9186294922CE0438C4D482AC /* Note.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FD2E4F5E147B542E2CE63C6 /* Note.swift */; };
 		ACF025848646147E14AB2ECF /* ScrapsApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 365AA7C8FA6548E66C018EEF /* ScrapsApp.swift */; };
 		DB1EA59A18CDC30B12A2AD38 /* MenuBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4FFE6C21A95608F761AFFF4 /* MenuBarView.swift */; };
+		F06F60B75F7EA0E8087DDE20 /* NotePanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34EA7826014B629E47098A81 /* NotePanel.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -27,11 +29,13 @@
 
 /* Begin PBXFileReference section */
 		22B09D62FE3EFA177C5D6DE4 /* NoteEditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteEditorView.swift; sourceTree = "<group>"; };
+		34EA7826014B629E47098A81 /* NotePanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotePanel.swift; sourceTree = "<group>"; };
 		365AA7C8FA6548E66C018EEF /* ScrapsApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScrapsApp.swift; sourceTree = "<group>"; };
 		39D94DAE9AF7BADBB68584BF /* Scraps.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Scraps.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		6FD2E4F5E147B542E2CE63C6 /* Note.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Note.swift; sourceTree = "<group>"; };
 		90E92D24708A31B3E55D7CBC /* NoteManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteManager.swift; sourceTree = "<group>"; };
 		91A1269C43FF982AB59283D3 /* ScrapsTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ScrapsTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		A16183AEDB532507302E6936 /* WindowManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowManager.swift; sourceTree = "<group>"; };
 		C4FFE6C21A95608F761AFFF4 /* MenuBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarView.swift; sourceTree = "<group>"; };
 		D3AE1AB027EC921870D9AB14 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		ED93F4C39D52526701155F2F /* NoteModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteModelTests.swift; sourceTree = "<group>"; };
@@ -66,6 +70,7 @@
 			isa = PBXGroup;
 			children = (
 				90E92D24708A31B3E55D7CBC /* NoteManager.swift */,
+				A16183AEDB532507302E6936 /* WindowManager.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -105,6 +110,7 @@
 			children = (
 				C4FFE6C21A95608F761AFFF4 /* MenuBarView.swift */,
 				22B09D62FE3EFA177C5D6DE4 /* NoteEditorView.swift */,
+				34EA7826014B629E47098A81 /* NotePanel.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -195,7 +201,9 @@
 				9186294922CE0438C4D482AC /* Note.swift in Sources */,
 				490E65ACCD64453E9F56B9A5 /* NoteEditorView.swift in Sources */,
 				7C2D0294D5510E4FB10D3526 /* NoteManager.swift in Sources */,
+				F06F60B75F7EA0E8087DDE20 /* NotePanel.swift in Sources */,
 				ACF025848646147E14AB2ECF /* ScrapsApp.swift in Sources */,
+				41994A3D70D1A2C76AA68CDF /* WindowManager.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
