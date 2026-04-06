@@ -55,11 +55,27 @@ final class WindowManager {
 
         note.isWindowOpen = true
         noteManager.save()
+        NSApp.activate()
         panel.makeKeyAndOrderFront(nil)
+        panel.focusEditor()
     }
 
     func closeNote(_ note: Note) {
         panels[note.persistentModelID]?.close()
+    }
+
+    func confirmDeleteNote(_ note: Note) {
+        let alert = NSAlert()
+        alert.messageText = "Delete \"\(note.displayTitle)\"?"
+        alert.informativeText = "This cannot be undone."
+        alert.alertStyle = .warning
+        alert.addButton(withTitle: "Delete")
+        alert.addButton(withTitle: "Cancel")
+
+        if alert.runModal() == .alertFirstButtonReturn {
+            closeNote(note)
+            noteManager.deleteNote(note)
+        }
     }
 
     func isOpen(_ note: Note) -> Bool {

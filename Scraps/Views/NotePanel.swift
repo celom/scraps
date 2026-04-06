@@ -23,6 +23,7 @@ final class NotePanel: NSPanel {
                 onSave: { noteManager.save() },
                 onPinToggle: { windowManager.updateWindowLevel(for: note) },
                 onClose: { [weak self] in self?.close() },
+                onDelete: { windowManager.confirmDeleteNote(note) },
                 showPinButton: true,
                 floatingToolbar: true
             )
@@ -38,4 +39,19 @@ final class NotePanel: NSPanel {
     }
 
     override var canBecomeKey: Bool { true }
+
+    func focusEditor() {
+        DispatchQueue.main.async { [weak self] in
+            guard let self, let contentView = self.contentView else { return }
+            self.makeFirstResponder(self.findTextView(in: contentView) ?? contentView)
+        }
+    }
+
+    private func findTextView(in view: NSView) -> NSView? {
+        if view is NSTextView { return view }
+        for subview in view.subviews {
+            if let found = findTextView(in: subview) { return found }
+        }
+        return nil
+    }
 }

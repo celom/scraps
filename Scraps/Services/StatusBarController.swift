@@ -58,12 +58,9 @@ final class StatusBarController {
 
         if !nonMainNotes.isEmpty {
             for note in nonMainNotes {
-                let item = NSMenuItem(title: note.displayTitle, action: #selector(toggleNoteFromMenu(_:)), keyEquivalent: "")
+                let item = NSMenuItem(title: "", action: #selector(toggleNoteFromMenu(_:)), keyEquivalent: "")
                 item.target = self
                 item.representedObject = note
-                if windowManager.isOpen(note) {
-                    item.state = .on
-                }
 
                 let itemView = NoteMenuItemView(
                     title: note.displayTitle,
@@ -124,18 +121,7 @@ final class StatusBarController {
 
     private func confirmDeleteNote(_ note: Note) {
         statusItem.menu?.cancelTracking()
-
-        let alert = NSAlert()
-        alert.messageText = "Delete \"\(note.displayTitle)\"?"
-        alert.informativeText = "This cannot be undone."
-        alert.alertStyle = .warning
-        alert.addButton(withTitle: "Delete")
-        alert.addButton(withTitle: "Cancel")
-
-        if alert.runModal() == .alertFirstButtonReturn {
-            windowManager.closeNote(note)
-            noteManager.deleteNote(note)
-        }
+        windowManager.confirmDeleteNote(note)
     }
 
     @objc private func toggleLaunchAtLogin(_ sender: NSMenuItem) {
@@ -161,7 +147,7 @@ private final class NoteMenuItemView: NSView {
     private let onToggle: () -> Void
     private let onDelete: () -> Void
     private let titleLabel: NSTextField
-    private let checkmark: NSTextField
+    private let iconView: NSImageView
     private let deleteButton: NSButton
     private var isHighlighted = false {
         didSet { needsDisplay = true; updateColors() }
@@ -171,13 +157,20 @@ private final class NoteMenuItemView: NSView {
         self.onToggle = onToggle
         self.onDelete = onDelete
 
-        checkmark = NSTextField(labelWithString: isOpen ? "✓" : "")
-        checkmark.font = .menuFont(ofSize: 13)
-        checkmark.alignment = .center
+        let iconName = isOpen ? "checkmark" : "note.text"
+        let icon = NSImage(systemSymbolName: iconName, accessibilityDescription: nil)!
+        let iconImage = NSImageView(image: icon)
+        iconImage.imageScaling = .scaleProportionallyDown
+        iconImage.contentTintColor = .secondaryLabelColor
+        iconImage.setContentHuggingPriority(.required, for: .horizontal)
+        iconImage.setContentCompressionResistancePriority(.required, for: .horizontal)
+        self.iconView = iconImage
 
         titleLabel = NSTextField(labelWithString: title)
         titleLabel.font = .menuFont(ofSize: 13)
         titleLabel.lineBreakMode = .byTruncatingTail
+        titleLabel.maximumNumberOfLines = 1
+        titleLabel.cell?.truncatesLastVisibleLine = true
 
         deleteButton = NSButton(image: NSImage(systemSymbolName: "trash", accessibilityDescription: "Delete")!, target: nil, action: nil)
         deleteButton.bezelStyle = .inline
@@ -195,20 +188,25 @@ private final class NoteMenuItemView: NSView {
         deleteButton.action = #selector(deleteTapped)
         deleteButton.isHidden = true
 
-        addSubview(checkmark)
+        addSubview(iconView)
         addSubview(titleLabel)
         addSubview(deleteButton)
 
-        checkmark.translatesAutoresizingMaskIntoConstraints = false
+        iconView.translatesAutoresizingMaskIntoConstraints = false
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
         deleteButton.translatesAutoresizingMaskIntoConstraints = false
 
-        NSLayoutConstraint.activate([
-            checkmark.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 6),
-            checkmark.centerYAnchor.constraint(equalTo: centerYAnchor),
-            checkmark.widthAnchor.constraint(equalToConstant: 18),
+        titleLabel.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
 
-            titleLabel.leadingAnchor.constraint(equalTo: checkmark.trailingAnchor, constant: 2),
+        NSLayoutConstraint.activate([
+            widthAnchor.constraint(lessThanOrEqualToConstant: 250),
+
+            iconView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 8),
+            iconView.centerYAnchor.constraint(equalTo: centerYAnchor),
+            iconView.widthAnchor.constraint(equalToConstant: 14),
+            iconView.heightAnchor.constraint(equalToConstant: 14),
+
+            titleLabel.leadingAnchor.constraint(equalTo: iconView.trailingAnchor, constant: 4),
             titleLabel.centerYAnchor.constraint(equalTo: centerYAnchor),
             titleLabel.trailingAnchor.constraint(lessThanOrEqualTo: deleteButton.leadingAnchor, constant: -4),
 
@@ -226,7 +224,7 @@ private final class NoteMenuItemView: NSView {
     private func updateColors() {
         let color: NSColor = isHighlighted ? .white : .labelColor
         titleLabel.textColor = color
-        checkmark.textColor = color
+        iconView.contentTintColor = isHighlighted ? .white : .secondaryLabelColor
         deleteButton.contentTintColor = isHighlighted ? .white : .secondaryLabelColor
     }
 

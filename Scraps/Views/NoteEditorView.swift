@@ -5,6 +5,7 @@ struct NoteEditorView: View {
     var onSave: () -> Void = {}
     var onPinToggle: (() -> Void)?
     var onClose: (() -> Void)?
+    var onDelete: (() -> Void)?
     var showPinButton: Bool = false
     var floatingToolbar: Bool = false
 
@@ -22,7 +23,7 @@ struct NoteEditorView: View {
                 if isHovering {
                     toolbar
                         .background(.ultraThinMaterial.opacity(0.6), in: RoundedRectangle(cornerRadius: 6))
-                        .padding(.trailing, 0)
+                        .padding(.trailing, 4)
                         .transition(.opacity)
                 }
             }
@@ -49,7 +50,7 @@ struct NoteEditorView: View {
     }
 
     private var toolbar: some View {
-        HStack(spacing: 2) {
+        HStack(spacing: 6) {
             if !floatingToolbar {
                 Text("Quick scrap")
                     .font(.system(size: 11, weight: .medium))
@@ -89,30 +90,29 @@ struct NoteEditorView: View {
             .help(note.isMarkdownPreview ? "Edit" : "Preview Markdown")
             .keyboardShortcut("m", modifiers: .command)
 
-            Button(action: decreaseFontSize) { EmptyView() }
-                .keyboardShortcut("-", modifiers: .command)
-                .frame(width: 0, height: 0)
-                .hidden()
-
-            Button(action: increaseFontSize) { EmptyView() }
-                .keyboardShortcut("+", modifiers: .command)
-                .frame(width: 0, height: 0)
-                .hidden()
-
-            Button(action: resetFontSize) { EmptyView() }
-                .keyboardShortcut("0", modifiers: .command)
-                .frame(width: 0, height: 0)
-                .hidden()
-
-            if let onClose {
-                Button(action: onClose) { EmptyView() }
-                    .keyboardShortcut("w", modifiers: .command)
-                    .frame(width: 0, height: 0)
-                    .hidden()
-            }
         }
         .padding(.horizontal, 6)
         .padding(.vertical, 4)
+        .overlay {
+            HStack(spacing: 0) {
+                Button(action: decreaseFontSize) { EmptyView() }
+                    .keyboardShortcut("-", modifiers: .command)
+                Button(action: increaseFontSize) { EmptyView() }
+                    .keyboardShortcut("+", modifiers: .command)
+                Button(action: resetFontSize) { EmptyView() }
+                    .keyboardShortcut("0", modifiers: .command)
+                if let onClose {
+                    Button(action: onClose) { EmptyView() }
+                        .keyboardShortcut("w", modifiers: .command)
+                }
+                if let onDelete {
+                    Button(action: onDelete) { EmptyView() }
+                        .keyboardShortcut("d", modifiers: [.command, .shift])
+                }
+            }
+            .frame(width: 0, height: 0)
+            .hidden()
+        }
     }
 
     private var editor: some View {
