@@ -8,8 +8,11 @@
 
 /* Begin PBXBuildFile section */
 		2F6AF9E29D6309C69B970F90 /* NoteModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED93F4C39D52526701155F2F /* NoteModelTests.swift */; };
+		490E65ACCD64453E9F56B9A5 /* NoteEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22B09D62FE3EFA177C5D6DE4 /* NoteEditorView.swift */; };
+		7C2D0294D5510E4FB10D3526 /* NoteManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90E92D24708A31B3E55D7CBC /* NoteManager.swift */; };
 		9186294922CE0438C4D482AC /* Note.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FD2E4F5E147B542E2CE63C6 /* Note.swift */; };
 		ACF025848646147E14AB2ECF /* ScrapsApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 365AA7C8FA6548E66C018EEF /* ScrapsApp.swift */; };
+		DB1EA59A18CDC30B12A2AD38 /* MenuBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4FFE6C21A95608F761AFFF4 /* MenuBarView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -23,10 +26,13 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		22B09D62FE3EFA177C5D6DE4 /* NoteEditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteEditorView.swift; sourceTree = "<group>"; };
 		365AA7C8FA6548E66C018EEF /* ScrapsApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScrapsApp.swift; sourceTree = "<group>"; };
 		39D94DAE9AF7BADBB68584BF /* Scraps.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Scraps.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		6FD2E4F5E147B542E2CE63C6 /* Note.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Note.swift; sourceTree = "<group>"; };
+		90E92D24708A31B3E55D7CBC /* NoteManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteManager.swift; sourceTree = "<group>"; };
 		91A1269C43FF982AB59283D3 /* ScrapsTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ScrapsTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		C4FFE6C21A95608F761AFFF4 /* MenuBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarView.swift; sourceTree = "<group>"; };
 		D3AE1AB027EC921870D9AB14 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		ED93F4C39D52526701155F2F /* NoteModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteModelTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -56,6 +62,14 @@
 			path = ScrapsTests;
 			sourceTree = "<group>";
 		};
+		4E9A722A8DFCAF2A95DF93D6 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				90E92D24708A31B3E55D7CBC /* NoteManager.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
 		5A1A1BE0F65091B755BBC0BC /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -71,6 +85,8 @@
 				365AA7C8FA6548E66C018EEF /* ScrapsApp.swift */,
 				01CE8C6AC670C8B5AF1C8A5D /* Models */,
 				1632EF23968107BC937AC6B5 /* Resources */,
+				4E9A722A8DFCAF2A95DF93D6 /* Services */,
+				E82D10C2EEBC91A4330B45BE /* Views */,
 			);
 			path = Scraps;
 			sourceTree = "<group>";
@@ -82,6 +98,15 @@
 				3A9336CCB84FDBC8CA1E17EF /* ScrapsTests */,
 				5A1A1BE0F65091B755BBC0BC /* Products */,
 			);
+			sourceTree = "<group>";
+		};
+		E82D10C2EEBC91A4330B45BE /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				C4FFE6C21A95608F761AFFF4 /* MenuBarView.swift */,
+				22B09D62FE3EFA177C5D6DE4 /* NoteEditorView.swift */,
+			);
+			path = Views;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -166,7 +191,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DB1EA59A18CDC30B12A2AD38 /* MenuBarView.swift in Sources */,
 				9186294922CE0438C4D482AC /* Note.swift in Sources */,
+				490E65ACCD64453E9F56B9A5 /* NoteEditorView.swift in Sources */,
+				7C2D0294D5510E4FB10D3526 /* NoteManager.swift in Sources */,
 				ACF025848646147E14AB2ECF /* ScrapsApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
