@@ -30,6 +30,7 @@ final class NotePanel: NSPanel {
             )
             .frame(minWidth: 200, minHeight: 100)
             .background(.ultraThinMaterial)
+            .clipShape(RoundedRectangle(cornerRadius: 10))
         )
         contentView = hostingView
 
