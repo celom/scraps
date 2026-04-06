@@ -1,11 +1,13 @@
 import Foundation
 import SwiftData
 import SwiftUI
+import os
 
 @MainActor
 @Observable
 final class NoteManager {
     private let modelContext: ModelContext
+    private static let logger = Logger(subsystem: "com.celom.scraps", category: "NoteManager")
 
     private(set) var mainNote: Note?
     private(set) var notes: [Note] = []
@@ -20,7 +22,12 @@ final class NoteManager {
         let descriptor = FetchDescriptor<Note>(
             sortBy: [SortDescriptor(\.createdAt, order: .reverse)]
         )
-        notes = (try? modelContext.fetch(descriptor)) ?? []
+        do {
+            notes = try modelContext.fetch(descriptor)
+        } catch {
+            Self.logger.error("Failed to fetch notes: \(error)")
+            notes = []
+        }
     }
 
     func ensureMainNote() {
@@ -29,7 +36,7 @@ final class NoteManager {
         } else {
             let note = Note(isMainNote: true)
             modelContext.insert(note)
-            try? modelContext.save()
+            persistOrLog("create main note")
             mainNote = note
             loadNotes()
         }
@@ -38,18 +45,26 @@ final class NoteManager {
     func createNote(content: String = "") -> Note {
         let note = Note(content: content)
         modelContext.insert(note)
-        try? modelContext.save()
+        persistOrLog("create note")
         loadNotes()
         return note
     }
 
     func deleteNote(_ note: Note) {
         modelContext.delete(note)
-        try? modelContext.save()
+        persistOrLog("delete note")
         loadNotes()
     }
 
     func save() {
-        try? modelContext.save()
+        persistOrLog("save")
+    }
+
+    private func persistOrLog(_ operation: String) {
+        do {
+            try modelContext.save()
+        } catch {
+            Self.logger.error("Failed to \(operation): \(error)")
+        }
     }
 }

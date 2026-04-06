@@ -9,13 +9,16 @@ final class Note {
     var isMainNote: Bool
     var isWindowOpen: Bool
     var fontSize: CGFloat
+    var hasCustomPosition: Bool
     var positionX: Double
     var positionY: Double
     var createdAt: Date
     var updatedAt: Date
 
     var displayTitle: String {
-        content.components(separatedBy: .newlines).first(where: { !$0.isEmpty }) ?? "Untitled"
+        content.components(separatedBy: .newlines)
+            .first(where: { !$0.trimmingCharacters(in: .whitespaces).isEmpty })?
+            .trimmingCharacters(in: .whitespaces) ?? "Untitled"
     }
 
     init(
@@ -28,6 +31,7 @@ final class Note {
         self.isMainNote = isMainNote
         self.isWindowOpen = false
         self.fontSize = 14
+        self.hasCustomPosition = false
         self.positionX = 0
         self.positionY = 0
         self.createdAt = .now

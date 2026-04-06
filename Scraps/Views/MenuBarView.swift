@@ -24,7 +24,7 @@ struct MenuBarView: View {
 
                     Spacer()
 
-                    Text("\(noteManager.notes.count - 1) notes")
+                    Text("\(noteManager.notes.filter { !$0.isMainNote }.count) notes")
                         .font(.system(size: 10))
                         .foregroundStyle(.tertiary)
                 }

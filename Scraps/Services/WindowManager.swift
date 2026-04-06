@@ -6,6 +6,7 @@ import SwiftUI
 @Observable
 final class WindowManager {
     private var panels: [PersistentIdentifier: NotePanel] = [:]
+    private var observers: [PersistentIdentifier: [any NSObjectProtocol]] = [:]
     private let noteManager: NoteManager
 
     init(noteManager: NoteManager) {
@@ -29,7 +30,7 @@ final class WindowManager {
         let noteID = note.persistentModelID
         panels[noteID] = panel
 
-        NotificationCenter.default.addObserver(
+        let closeObserver = NotificationCenter.default.addObserver(
             forName: NSWindow.willCloseNotification,
             object: panel,
             queue: .main
@@ -40,7 +41,7 @@ final class WindowManager {
             }
         }
 
-        NotificationCenter.default.addObserver(
+        let moveObserver = NotificationCenter.default.addObserver(
             forName: NSWindow.didMoveNotification,
             object: panel,
             queue: .main
@@ -49,6 +50,8 @@ final class WindowManager {
                 self?.savePosition(for: noteID, frame: panel.frame)
             }
         }
+
+        observers[noteID] = [closeObserver, moveObserver]
 
         note.isWindowOpen = true
         noteManager.save()
@@ -73,6 +76,7 @@ final class WindowManager {
         guard let note = noteManager.notes.first(where: { $0.persistentModelID == noteID }) else { return }
         note.positionX = frame.origin.x
         note.positionY = frame.origin.y
+        note.hasCustomPosition = true
         noteManager.save()
     }
 
@@ -80,9 +84,19 @@ final class WindowManager {
         if let note = noteManager.notes.first(where: { $0.persistentModelID == noteID }) {
             note.positionX = panel.frame.origin.x
             note.positionY = panel.frame.origin.y
+            note.hasCustomPosition = true
             note.isWindowOpen = false
             noteManager.save()
         }
+        removeObservers(for: noteID)
         panels.removeValue(forKey: noteID)
+    }
+
+    private func removeObservers(for noteID: PersistentIdentifier) {
+        if let noteObservers = observers.removeValue(forKey: noteID) {
+            for observer in noteObservers {
+                NotificationCenter.default.removeObserver(observer)
+            }
+        }
     }
 }

@@ -14,6 +14,7 @@ struct NoteModelTests {
         #expect(note.isMainNote == false)
         #expect(note.isWindowOpen == false)
         #expect(note.fontSize == 14)
+        #expect(note.hasCustomPosition == false)
         #expect(note.positionX == 0)
         #expect(note.positionY == 0)
     }
@@ -46,6 +47,12 @@ struct NoteModelTests {
     func displayTitleWhitespaceOnly() {
         let note = Note(content: "\n\n\n")
         #expect(note.displayTitle == "Untitled")
+    }
+
+    @Test("displayTitle trims leading whitespace")
+    func displayTitleTrimsWhitespace() {
+        let note = Note(content: "   Indented Title\nBody")
+        #expect(note.displayTitle == "Indented Title")
     }
 
     @Test("Content can be updated")

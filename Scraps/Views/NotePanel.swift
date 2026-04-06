@@ -29,7 +29,7 @@ final class NotePanel: NSPanel {
         )
         contentView = hostingView
 
-        if note.positionX != 0 || note.positionY != 0 {
+        if note.hasCustomPosition {
             setFrameOrigin(NSPoint(x: note.positionX, y: note.positionY))
         } else {
             center()

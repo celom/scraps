@@ -8,6 +8,7 @@ struct NoteEditorView: View {
     var floatingToolbar: Bool = false
 
     @State private var isHovering = false
+    @State private var saveTask: Task<Void, Never>?
 
     var body: some View {
         if floatingToolbar {
@@ -104,7 +105,7 @@ struct NoteEditorView: View {
             .padding(12)
             .onChange(of: note.content) {
                 note.updatedAt = .now
-                onSave()
+                debouncedSave()
             }
     }
 
@@ -130,5 +131,14 @@ struct NoteEditorView: View {
     private func resetFontSize() {
         note.fontSize = 14
         onSave()
+    }
+
+    private func debouncedSave() {
+        saveTask?.cancel()
+        saveTask = Task {
+            try? await Task.sleep(for: .milliseconds(500))
+            guard !Task.isCancelled else { return }
+            onSave()
+        }
     }
 }
