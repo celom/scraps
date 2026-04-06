@@ -1,0 +1,48 @@
+name: Build and Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build:
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          brew install xcodegen create-dmg
+
+      - name: Generate Xcode project
+        run: xcodegen generate
+
+      - name: Build
+        run: |
+          xcodebuild -scheme Scraps \
+            -destination 'platform=macOS' \
+            -configuration Release \
+            -derivedDataPath build/DerivedData \
+            build
+
+      - name: Create DMG
+        run: |
+          APP_PATH="build/DerivedData/Build/Products/Release/Scraps.app"
+          create-dmg \
+            --volname "Scraps" \
+            --volicon "${APP_PATH}/Contents/Resources/AppIcon.icns" \
+            --window-pos 200 120 \
+            --window-size 600 400 \
+            --icon-size 100 \
+            --icon "Scraps.app" 150 190 \
+            --app-drop-link 450 190 \
+            --no-internet-enable \
+            "Scraps-${GITHUB_REF_NAME}.dmg" \
+            "${APP_PATH}" || true
+
+      - name: Upload DMG to Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: Scraps-*.dmg
+          generate_release_notes: true
