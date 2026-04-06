@@ -1,4 +1,5 @@
 import AppKit
+import ServiceManagement
 import SwiftUI
 
 @MainActor
@@ -75,6 +76,13 @@ final class StatusBarController {
 
         menu.addItem(.separator())
 
+        let launchItem = NSMenuItem(title: "Launch at Login", action: #selector(toggleLaunchAtLogin(_:)), keyEquivalent: "")
+        launchItem.target = self
+        launchItem.state = SMAppService.mainApp.status == .enabled ? .on : .off
+        menu.addItem(launchItem)
+
+        menu.addItem(.separator())
+
         let quitItem = NSMenuItem(title: "Quit Scraps", action: #selector(quitApp), keyEquivalent: "q")
         quitItem.target = self
         menu.addItem(quitItem)
@@ -92,6 +100,18 @@ final class StatusBarController {
     @objc private func createNewNote() {
         let note = noteManager.createNote()
         windowManager.openNote(note)
+    }
+
+    @objc private func toggleLaunchAtLogin(_ sender: NSMenuItem) {
+        do {
+            if SMAppService.mainApp.status == .enabled {
+                try SMAppService.mainApp.unregister()
+            } else {
+                try SMAppService.mainApp.register()
+            }
+        } catch {
+            NSLog("Failed to toggle launch at login: \(error)")
+        }
     }
 
     @objc private func quitApp() {

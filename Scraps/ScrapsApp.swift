@@ -25,6 +25,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         let sbc = StatusBarController(noteManager: noteManager, windowManager: windowManager)
         statusBarController = sbc
 
+        windowManager.restorePreviouslyOpenNotes()
+
         hotkeyService = HotkeyService(
             onNewNote: {
                 let note = noteManager.createNote()

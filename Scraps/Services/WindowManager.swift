@@ -12,6 +12,13 @@ final class WindowManager {
         self.noteManager = noteManager
     }
 
+    func restorePreviouslyOpenNotes() {
+        let openNotes = noteManager.notes.filter { $0.isWindowOpen && !$0.isMainNote }
+        for note in openNotes {
+            openNote(note)
+        }
+    }
+
     func openNote(_ note: Note) {
         if let existing = panels[note.persistentModelID] {
             existing.makeKeyAndOrderFront(nil)
