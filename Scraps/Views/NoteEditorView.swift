@@ -59,28 +59,20 @@ struct NoteEditorView: View {
                 .help(note.isPinned ? "Float Above Windows" : "Stay Behind Windows")
             }
 
-            Button(action: decreaseFontSize) {
-                Image(systemName: "textformat.size.smaller")
-                    .font(.system(size: 11))
-                    .foregroundStyle(.secondary)
-            }
-            .buttonStyle(.plain)
-            .keyboardShortcut("-", modifiers: .control)
-            .help("Decrease font size")
+            Button(action: decreaseFontSize) { EmptyView() }
+                .keyboardShortcut("-", modifiers: .command)
+                .frame(width: 0, height: 0)
+                .hidden()
 
-            Text("\(Int(note.fontSize))")
-                .font(.system(size: 10))
-                .foregroundStyle(.tertiary)
-                .monospacedDigit()
+            Button(action: increaseFontSize) { EmptyView() }
+                .keyboardShortcut("+", modifiers: .command)
+                .frame(width: 0, height: 0)
+                .hidden()
 
-            Button(action: increaseFontSize) {
-                Image(systemName: "textformat.size.larger")
-                    .font(.system(size: 11))
-                    .foregroundStyle(.secondary)
-            }
-            .buttonStyle(.plain)
-            .keyboardShortcut("+", modifiers: .control)
-            .help("Increase font size")
+            Button(action: resetFontSize) { EmptyView() }
+                .keyboardShortcut("0", modifiers: .command)
+                .frame(width: 0, height: 0)
+                .hidden()
 
             Button(action: {
                 note.isMarkdownPreview.toggle()
@@ -125,6 +117,11 @@ struct NoteEditorView: View {
 
     private func decreaseFontSize() {
         note.fontSize = max(note.fontSize - 2, 10)
+        onSave()
+    }
+
+    private func resetFontSize() {
+        note.fontSize = 14
         onSave()
     }
 }
