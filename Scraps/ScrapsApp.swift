@@ -14,6 +14,7 @@ struct ScrapsApp: App {
 
 final class AppDelegate: NSObject, NSApplicationDelegate {
     private var statusBarController: StatusBarController?
+    private var hotkeyService: HotkeyService?
     private var modelContainer: ModelContainer?
 
     func applicationDidFinishLaunching(_ notification: Notification) {
@@ -21,6 +22,17 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         self.modelContainer = container
         let noteManager = NoteManager(modelContext: container.mainContext)
         let windowManager = WindowManager(noteManager: noteManager)
-        statusBarController = StatusBarController(noteManager: noteManager, windowManager: windowManager)
+        let sbc = StatusBarController(noteManager: noteManager, windowManager: windowManager)
+        statusBarController = sbc
+
+        hotkeyService = HotkeyService(
+            onNewNote: {
+                let note = noteManager.createNote()
+                windowManager.openNote(note)
+            },
+            onToggleMain: {
+                sbc.togglePopover()
+            }
+        )
     }
 }
