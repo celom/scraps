@@ -4,6 +4,7 @@ struct NoteEditorView: View {
     @Bindable var note: Note
     var onSave: () -> Void = {}
     var onPinToggle: (() -> Void)?
+    var onClose: (() -> Void)?
     var showPinButton: Bool = false
     var floatingToolbar: Bool = false
 
@@ -49,19 +50,14 @@ struct NoteEditorView: View {
 
     private var toolbar: some View {
         HStack(spacing: 2) {
-            Button(action: {
-                note.isMarkdownPreview.toggle()
-                onSave()
-            }) {
-                Image(systemName: note.isMarkdownPreview ? "pencil" : "eye")
-                    .font(.system(size: 11))
-                    .frame(width: 22, height: 22, alignment: .center)
-                    .contentShape(Rectangle())
+            if !floatingToolbar {
+                Text("Quick scrap")
+                    .font(.system(size: 11, weight: .medium))
                     .foregroundStyle(.secondary)
+                    .padding(.leading, 6)
+
+                Spacer()
             }
-            .buttonStyle(.plain)
-            .help(note.isMarkdownPreview ? "Edit" : "Preview Markdown")
-            .keyboardShortcut("m", modifiers: .command)
 
             if showPinButton {
                 Button(action: {
@@ -79,6 +75,20 @@ struct NoteEditorView: View {
                 .help(note.isPinned ? "Float Above Windows" : "Stay Behind Windows")
             }
 
+            Button(action: {
+                note.isMarkdownPreview.toggle()
+                onSave()
+            }) {
+                Image(systemName: note.isMarkdownPreview ? "pencil" : "eye")
+                    .font(.system(size: 11))
+                    .frame(width: 22, height: 22, alignment: .center)
+                    .contentShape(Rectangle())
+                    .foregroundStyle(.secondary)
+            }
+            .buttonStyle(.plain)
+            .help(note.isMarkdownPreview ? "Edit" : "Preview Markdown")
+            .keyboardShortcut("m", modifiers: .command)
+
             Button(action: decreaseFontSize) { EmptyView() }
                 .keyboardShortcut("-", modifiers: .command)
                 .frame(width: 0, height: 0)
@@ -93,6 +103,13 @@ struct NoteEditorView: View {
                 .keyboardShortcut("0", modifiers: .command)
                 .frame(width: 0, height: 0)
                 .hidden()
+
+            if let onClose {
+                Button(action: onClose) { EmptyView() }
+                    .keyboardShortcut("w", modifiers: .command)
+                    .frame(width: 0, height: 0)
+                    .hidden()
+            }
         }
         .padding(.horizontal, 6)
         .padding(.vertical, 4)

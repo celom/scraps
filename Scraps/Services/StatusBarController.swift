@@ -58,28 +58,24 @@ final class StatusBarController {
 
         if !nonMainNotes.isEmpty {
             for note in nonMainNotes {
-                let title = note.displayTitle
-                let item = NSMenuItem(title: title, action: #selector(openNoteFromMenu(_:)), keyEquivalent: "")
+                let item = NSMenuItem(title: note.displayTitle, action: #selector(toggleNoteFromMenu(_:)), keyEquivalent: "")
                 item.target = self
                 item.representedObject = note
                 if windowManager.isOpen(note) {
                     item.state = .on
                 }
 
-                let submenu = NSMenu()
-                let openItem = NSMenuItem(title: "Open", action: #selector(openNoteFromMenu(_:)), keyEquivalent: "")
-                openItem.target = self
-                openItem.representedObject = note
-                submenu.addItem(openItem)
-
-                submenu.addItem(.separator())
-
-                let deleteItem = NSMenuItem(title: "Delete…", action: #selector(deleteNoteFromMenu(_:)), keyEquivalent: "")
-                deleteItem.target = self
-                deleteItem.representedObject = note
-                submenu.addItem(deleteItem)
-
-                item.submenu = submenu
+                let itemView = NoteMenuItemView(
+                    title: note.displayTitle,
+                    isOpen: windowManager.isOpen(note),
+                    onToggle: { [weak self] in
+                        self?.toggleNote(note)
+                    },
+                    onDelete: { [weak self] in
+                        self?.confirmDeleteNote(note)
+                    }
+                )
+                item.view = itemView
                 menu.addItem(item)
             }
             menu.addItem(.separator())
@@ -107,9 +103,18 @@ final class StatusBarController {
         statusItem.menu = nil // Reset so left-click works again
     }
 
-    @objc private func openNoteFromMenu(_ sender: NSMenuItem) {
+    @objc private func toggleNoteFromMenu(_ sender: NSMenuItem) {
         guard let note = sender.representedObject as? Note else { return }
-        windowManager.openNote(note)
+        toggleNote(note)
+    }
+
+    private func toggleNote(_ note: Note) {
+        if windowManager.isOpen(note) {
+            windowManager.closeNote(note)
+        } else {
+            windowManager.openNote(note)
+        }
+        statusItem.menu?.cancelTracking()
     }
 
     @objc private func createNewNote() {
@@ -117,8 +122,8 @@ final class StatusBarController {
         windowManager.openNote(note)
     }
 
-    @objc private func deleteNoteFromMenu(_ sender: NSMenuItem) {
-        guard let note = sender.representedObject as? Note else { return }
+    private func confirmDeleteNote(_ note: Note) {
+        statusItem.menu?.cancelTracking()
 
         let alert = NSAlert()
         alert.messageText = "Delete \"\(note.displayTitle)\"?"
@@ -147,5 +152,110 @@ final class StatusBarController {
 
     @objc private func quitApp() {
         NSApp.terminate(nil)
+    }
+}
+
+// MARK: - Custom Menu Item View
+
+private final class NoteMenuItemView: NSView {
+    private let onToggle: () -> Void
+    private let onDelete: () -> Void
+    private let titleLabel: NSTextField
+    private let checkmark: NSTextField
+    private let deleteButton: NSButton
+    private var isHighlighted = false {
+        didSet { needsDisplay = true; updateColors() }
+    }
+
+    init(title: String, isOpen: Bool, onToggle: @escaping () -> Void, onDelete: @escaping () -> Void) {
+        self.onToggle = onToggle
+        self.onDelete = onDelete
+
+        checkmark = NSTextField(labelWithString: isOpen ? "✓" : "")
+        checkmark.font = .menuFont(ofSize: 13)
+        checkmark.alignment = .center
+
+        titleLabel = NSTextField(labelWithString: title)
+        titleLabel.font = .menuFont(ofSize: 13)
+        titleLabel.lineBreakMode = .byTruncatingTail
+
+        deleteButton = NSButton(image: NSImage(systemSymbolName: "trash", accessibilityDescription: "Delete")!, target: nil, action: nil)
+        deleteButton.bezelStyle = .inline
+        deleteButton.isBordered = false
+        deleteButton.imagePosition = .imageOnly
+        deleteButton.contentTintColor = .secondaryLabelColor
+        (deleteButton.cell as? NSButtonCell)?.highlightsBy = .contentsCellMask
+
+        super.init(frame: NSRect(x: 0, y: 0, width: 250, height: 22))
+
+        let trackingArea = NSTrackingArea(rect: .zero, options: [.mouseEnteredAndExited, .activeAlways, .inVisibleRect], owner: self, userInfo: nil)
+        addTrackingArea(trackingArea)
+
+        deleteButton.target = self
+        deleteButton.action = #selector(deleteTapped)
+        deleteButton.isHidden = true
+
+        addSubview(checkmark)
+        addSubview(titleLabel)
+        addSubview(deleteButton)
+
+        checkmark.translatesAutoresizingMaskIntoConstraints = false
+        titleLabel.translatesAutoresizingMaskIntoConstraints = false
+        deleteButton.translatesAutoresizingMaskIntoConstraints = false
+
+        NSLayoutConstraint.activate([
+            checkmark.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 6),
+            checkmark.centerYAnchor.constraint(equalTo: centerYAnchor),
+            checkmark.widthAnchor.constraint(equalToConstant: 18),
+
+            titleLabel.leadingAnchor.constraint(equalTo: checkmark.trailingAnchor, constant: 2),
+            titleLabel.centerYAnchor.constraint(equalTo: centerYAnchor),
+            titleLabel.trailingAnchor.constraint(lessThanOrEqualTo: deleteButton.leadingAnchor, constant: -4),
+
+            deleteButton.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -12),
+            deleteButton.centerYAnchor.constraint(equalTo: centerYAnchor),
+            deleteButton.widthAnchor.constraint(equalToConstant: 20),
+            deleteButton.heightAnchor.constraint(equalToConstant: 20),
+
+            heightAnchor.constraint(equalToConstant: 22),
+        ])
+    }
+
+    required init?(coder: NSCoder) { fatalError() }
+
+    private func updateColors() {
+        let color: NSColor = isHighlighted ? .white : .labelColor
+        titleLabel.textColor = color
+        checkmark.textColor = color
+        deleteButton.contentTintColor = isHighlighted ? .white : .secondaryLabelColor
+    }
+
+    override func draw(_ dirtyRect: NSRect) {
+        if isHighlighted {
+            NSColor.controlAccentColor.setFill()
+            let path = NSBezierPath(roundedRect: bounds.insetBy(dx: 4, dy: 1), xRadius: 4, yRadius: 4)
+            path.fill()
+        }
+        super.draw(dirtyRect)
+    }
+
+    override func mouseEntered(with event: NSEvent) {
+        isHighlighted = true
+        deleteButton.isHidden = false
+    }
+
+    override func mouseExited(with event: NSEvent) {
+        isHighlighted = false
+        deleteButton.isHidden = true
+    }
+
+    override func mouseUp(with event: NSEvent) {
+        let loc = convert(event.locationInWindow, from: nil)
+        if deleteButton.frame.contains(loc) { return }
+        onToggle()
+    }
+
+    @objc private func deleteTapped() {
+        onDelete()
     }
 }

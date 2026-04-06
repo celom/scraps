@@ -22,6 +22,7 @@ final class NotePanel: NSPanel {
                 note: note,
                 onSave: { noteManager.save() },
                 onPinToggle: { windowManager.updateWindowLevel(for: note) },
+                onClose: { [weak self] in self?.close() },
                 showPinButton: true,
                 floatingToolbar: true
             )
