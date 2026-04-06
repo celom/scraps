@@ -13,11 +13,14 @@ struct NoteEditorView: View {
         if floatingToolbar {
             ZStack(alignment: .topTrailing) {
                 content
+                    .background(.ultraThinMaterial)
+                    .clipShape(RoundedRectangle(cornerRadius: 10))
+                    .padding(.top, 36)
+
                 if isHovering {
                     toolbar
-                        .padding(6)
-                        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 6))
-                        .padding(6)
+                        .background(.ultraThinMaterial.opacity(0.6), in: RoundedRectangle(cornerRadius: 6))
+                        .padding(.trailing, 0)
                         .transition(.opacity)
                 }
             }
@@ -44,7 +47,21 @@ struct NoteEditorView: View {
     }
 
     private var toolbar: some View {
-        HStack(spacing: 4) {
+        HStack(spacing: 2) {
+            Button(action: {
+                note.isMarkdownPreview.toggle()
+                onSave()
+            }) {
+                Image(systemName: note.isMarkdownPreview ? "pencil" : "eye")
+                    .font(.system(size: 11))
+                    .frame(width: 22, height: 22, alignment: .center)
+                    .contentShape(Rectangle())
+                    .foregroundStyle(.secondary)
+            }
+            .buttonStyle(.plain)
+            .help(note.isMarkdownPreview ? "Edit" : "Preview Markdown")
+            .keyboardShortcut("m", modifiers: .command)
+
             if showPinButton {
                 Button(action: {
                     note.isPinned.toggle()
@@ -52,7 +69,9 @@ struct NoteEditorView: View {
                     onPinToggle?()
                 }) {
                     Image(systemName: note.isPinned ? "square.stack.3d.down.right" : "square.stack.3d.up")
-                        .font(.system(size: 12))
+                        .font(.system(size: 11))
+                        .frame(width: 22, height: 22, alignment: .trailing)
+                        .contentShape(Rectangle())
                         .foregroundStyle(note.isPinned ? .secondary : .primary)
                 }
                 .buttonStyle(.plain)
@@ -73,20 +92,8 @@ struct NoteEditorView: View {
                 .keyboardShortcut("0", modifiers: .command)
                 .frame(width: 0, height: 0)
                 .hidden()
-
-            Button(action: {
-                note.isMarkdownPreview.toggle()
-                onSave()
-            }) {
-                Image(systemName: note.isMarkdownPreview ? "pencil" : "eye")
-                    .font(.system(size: 12))
-                    .foregroundStyle(.secondary)
-            }
-            .buttonStyle(.plain)
-            .help(note.isMarkdownPreview ? "Edit" : "Preview Markdown")
-            .keyboardShortcut("m", modifiers: .command)
         }
-        .padding(.horizontal, 8)
+        .padding(.horizontal, 6)
         .padding(.vertical, 4)
     }
 

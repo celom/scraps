@@ -26,8 +26,6 @@ final class NotePanel: NSPanel {
                 floatingToolbar: true
             )
             .frame(minWidth: 200, minHeight: 100)
-            .background(.ultraThinMaterial)
-            .clipShape(RoundedRectangle(cornerRadius: 10))
         )
         contentView = hostingView
 
