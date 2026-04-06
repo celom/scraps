@@ -12,6 +12,8 @@ final class Note {
     var hasCustomPosition: Bool
     var positionX: Double
     var positionY: Double
+    var popoverWidth: Double = 320
+    var popoverHeight: Double = 300
     var createdAt: Date
     var updatedAt: Date
 
@@ -34,6 +36,8 @@ final class Note {
         self.hasCustomPosition = false
         self.positionX = 0
         self.positionY = 0
+        self.popoverWidth = 320
+        self.popoverHeight = 300
         self.createdAt = .now
         self.updatedAt = .now
     }
