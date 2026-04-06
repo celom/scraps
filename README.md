@@ -19,6 +19,7 @@ A lightweight macOS menu bar app for quick notes. Lives in your status bar, alwa
 | `Cmd+Shift+N` | Create new note |
 | `Cmd+M` | Toggle markdown preview |
 | `Cmd+W` | Close current note panel |
+| `Cmd+Shift+D` | Delete current note |
 | `Cmd+Plus` | Increase font size |
 | `Cmd+Minus` | Decrease font size |
 | `Cmd+0` | Reset font size |
