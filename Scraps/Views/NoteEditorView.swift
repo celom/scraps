@@ -5,16 +5,41 @@ struct NoteEditorView: View {
     var onSave: () -> Void = {}
     var onPinToggle: (() -> Void)?
     var showPinButton: Bool = false
+    var floatingToolbar: Bool = false
+
+    @State private var isHovering = false
 
     var body: some View {
-        VStack(spacing: 0) {
-            toolbar
-            Divider()
-            if note.isMarkdownPreview {
-                markdownPreview
-            } else {
-                editor
+        if floatingToolbar {
+            ZStack(alignment: .topTrailing) {
+                content
+                if isHovering {
+                    toolbar
+                        .padding(6)
+                        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 6))
+                        .padding(6)
+                        .transition(.opacity)
+                }
             }
+            .animation(.easeInOut(duration: 0.15), value: isHovering)
+            .onHover { hovering in
+                isHovering = hovering
+            }
+        } else {
+            VStack(spacing: 0) {
+                toolbar
+                Divider()
+                content
+            }
+        }
+    }
+
+    @ViewBuilder
+    private var content: some View {
+        if note.isMarkdownPreview {
+            markdownPreview
+        } else {
+            editor
         }
     }
 
@@ -26,15 +51,13 @@ struct NoteEditorView: View {
                     onSave()
                     onPinToggle?()
                 }) {
-                    Image(systemName: note.isPinned ? "pin.fill" : "pin")
+                    Image(systemName: note.isPinned ? "square.stack.3d.down.right" : "square.stack.3d.up")
                         .font(.system(size: 12))
-                        .foregroundStyle(note.isPinned ? .primary : .secondary)
+                        .foregroundStyle(note.isPinned ? .secondary : .primary)
                 }
                 .buttonStyle(.plain)
                 .help(note.isPinned ? "Float Above Windows" : "Stay Behind Windows")
             }
-
-            Spacer()
 
             Button(action: decreaseFontSize) {
                 Image(systemName: "textformat.size.smaller")
