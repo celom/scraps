@@ -2,7 +2,7 @@ import AppKit
 import SwiftUI
 
 final class NotePanel: NSPanel {
-    init(note: Note, noteManager: NoteManager) {
+    init(note: Note, noteManager: NoteManager, windowManager: WindowManager) {
         super.init(
             contentRect: NSRect(x: note.positionX, y: note.positionY, width: 300, height: 200),
             styleMask: [.titled, .closable, .resizable, .nonactivatingPanel, .fullSizeContentView],
@@ -11,7 +11,9 @@ final class NotePanel: NSPanel {
         )
 
         isFloatingPanel = true
-        level = .floating
+        level = note.isPinned
+            ? NSWindow.Level(rawValue: Int(CGWindowLevelForKey(.desktopWindow)) + 1)
+            : .floating
         titlebarAppearsTransparent = true
         titleVisibility = .hidden
         isMovableByWindowBackground = true
@@ -20,9 +22,12 @@ final class NotePanel: NSPanel {
         hasShadow = true
 
         let hostingView = NSHostingView(
-            rootView: NoteEditorView(note: note) {
-                noteManager.save()
-            }
+            rootView: NoteEditorView(
+                note: note,
+                onSave: { noteManager.save() },
+                onPinToggle: { windowManager.updateWindowLevel(for: note) },
+                showPinButton: true
+            )
             .frame(minWidth: 200, minHeight: 100)
             .background(.ultraThinMaterial)
         )
