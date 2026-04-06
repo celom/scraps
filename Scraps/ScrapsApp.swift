@@ -18,7 +18,18 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private var modelContainer: ModelContainer?
 
     func applicationDidFinishLaunching(_ notification: Notification) {
-        let container = try! ModelContainer(for: Note.self)
+        let container: ModelContainer
+        do {
+            container = try ModelContainer(for: Note.self)
+        } catch {
+            let alert = NSAlert()
+            alert.messageText = "Scraps failed to start"
+            alert.informativeText = "Could not open the data store: \(error.localizedDescription)"
+            alert.alertStyle = .critical
+            alert.runModal()
+            NSApp.terminate(nil)
+            return
+        }
         self.modelContainer = container
         let noteManager = NoteManager(modelContext: container.mainContext)
         let windowManager = WindowManager(noteManager: noteManager)

@@ -1,26 +1,40 @@
 import Carbon
 import AppKit
+import os
 
 @MainActor
 final class HotkeyService {
     nonisolated(unsafe) private var newNoteHotkeyRef: EventHotKeyRef?
     nonisolated(unsafe) private var toggleMainHotkeyRef: EventHotKeyRef?
-    private static var onNewNote: (() -> Void)?
-    private static var onToggleMain: (() -> Void)?
+    nonisolated(unsafe) private var eventHandlerRef: EventHandlerRef?
+
+    private let onNewNote: () -> Void
+    private let onToggleMain: () -> Void
 
     private static let newNoteHotkeyID = EventHotKeyID(signature: fourCharCode("ScN1"), id: 1)
     private static let toggleMainHotkeyID = EventHotKeyID(signature: fourCharCode("ScN2"), id: 2)
 
+    private static let logger = Logger(subsystem: "com.celom.scraps", category: "HotkeyService")
+
+    // The Carbon callback needs a way to reach instance methods.
+    // We store a pointer to self as the userData parameter.
+    nonisolated(unsafe) private static var shared: HotkeyService?
+
     init(onNewNote: @escaping () -> Void, onToggleMain: @escaping () -> Void) {
-        HotkeyService.onNewNote = onNewNote
-        HotkeyService.onToggleMain = onToggleMain
+        self.onNewNote = onNewNote
+        self.onToggleMain = onToggleMain
+        HotkeyService.shared = self
         registerHotkeys()
     }
 
     private func registerHotkeys() {
-        var eventType = EventTypeSpec(eventClass: OSType(kEventClassKeyboard), eventKind: UInt32(kEventHotKeyPressed))
+        var eventType = EventTypeSpec(
+            eventClass: OSType(kEventClassKeyboard),
+            eventKind: UInt32(kEventHotKeyPressed)
+        )
 
-        InstallEventHandler(
+        var handlerRef: EventHandlerRef?
+        let status = InstallEventHandler(
             GetApplicationEventTarget(),
             { (_, event, _) -> OSStatus in
                 var hotKeyID = EventHotKeyID()
@@ -35,9 +49,10 @@ final class HotkeyService {
                 )
 
                 DispatchQueue.main.async {
+                    guard let service = HotkeyService.shared else { return }
                     switch hotKeyID.id {
-                    case 1: HotkeyService.onNewNote?()
-                    case 2: HotkeyService.onToggleMain?()
+                    case 1: service.onNewNote()
+                    case 2: service.onToggleMain()
                     default: break
                     }
                 }
@@ -46,12 +61,18 @@ final class HotkeyService {
             1,
             &eventType,
             nil,
-            nil
+            &handlerRef
         )
+
+        if status == noErr {
+            eventHandlerRef = handlerRef
+        } else {
+            Self.logger.error("Failed to install event handler: \(status)")
+        }
 
         // ⌘⇧N — New note
         var newNoteRef: EventHotKeyRef?
-        RegisterEventHotKey(
+        let s1 = RegisterEventHotKey(
             UInt32(kVK_ANSI_N),
             UInt32(cmdKey | shiftKey),
             HotkeyService.newNoteHotkeyID,
@@ -59,11 +80,15 @@ final class HotkeyService {
             0,
             &newNoteRef
         )
-        newNoteHotkeyRef = newNoteRef
+        if s1 == noErr {
+            newNoteHotkeyRef = newNoteRef
+        } else {
+            Self.logger.warning("Failed to register ⌘⇧N hotkey: \(s1)")
+        }
 
         // ⌘⇧S — Toggle main note
         var toggleRef: EventHotKeyRef?
-        RegisterEventHotKey(
+        let s2 = RegisterEventHotKey(
             UInt32(kVK_ANSI_S),
             UInt32(cmdKey | shiftKey),
             HotkeyService.toggleMainHotkeyID,
@@ -71,16 +96,18 @@ final class HotkeyService {
             0,
             &toggleRef
         )
-        toggleMainHotkeyRef = toggleRef
+        if s2 == noErr {
+            toggleMainHotkeyRef = toggleRef
+        } else {
+            Self.logger.warning("Failed to register ⌘⇧S hotkey: \(s2)")
+        }
     }
 
     deinit {
-        if let ref = newNoteHotkeyRef {
-            UnregisterEventHotKey(ref)
-        }
-        if let ref = toggleMainHotkeyRef {
-            UnregisterEventHotKey(ref)
-        }
+        if let ref = newNoteHotkeyRef { UnregisterEventHotKey(ref) }
+        if let ref = toggleMainHotkeyRef { UnregisterEventHotKey(ref) }
+        if let ref = eventHandlerRef { RemoveEventHandler(ref) }
+        HotkeyService.shared = nil
     }
 }
 
