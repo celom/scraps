@@ -3,25 +3,24 @@ import SwiftData
 
 @main
 struct ScrapsApp: App {
-    private let modelContainer: ModelContainer
-    @State private var noteManager: NoteManager
-    @State private var windowManager: WindowManager
-
-    init() {
-        let container = try! ModelContainer(for: Note.self)
-        self.modelContainer = container
-        let nm = NoteManager(modelContext: container.mainContext)
-        self._noteManager = State(initialValue: nm)
-        self._windowManager = State(initialValue: WindowManager(noteManager: nm))
-    }
+    @NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
 
     var body: some Scene {
-        MenuBarExtra("Scraps", systemImage: "note.text") {
-            MenuBarView()
-                .environment(noteManager)
-                .environment(windowManager)
+        Settings {
+            EmptyView()
         }
-        .menuBarExtraStyle(.window)
-        .modelContainer(modelContainer)
+    }
+}
+
+final class AppDelegate: NSObject, NSApplicationDelegate {
+    private var statusBarController: StatusBarController?
+    private var modelContainer: ModelContainer?
+
+    func applicationDidFinishLaunching(_ notification: Notification) {
+        let container = try! ModelContainer(for: Note.self)
+        self.modelContainer = container
+        let noteManager = NoteManager(modelContext: container.mainContext)
+        let windowManager = WindowManager(noteManager: noteManager)
+        statusBarController = StatusBarController(noteManager: noteManager, windowManager: windowManager)
     }
 }

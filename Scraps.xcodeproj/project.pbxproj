@@ -13,6 +13,7 @@
 		7C2D0294D5510E4FB10D3526 /* NoteManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90E92D24708A31B3E55D7CBC /* NoteManager.swift */; };
 		9186294922CE0438C4D482AC /* Note.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FD2E4F5E147B542E2CE63C6 /* Note.swift */; };
 		ACF025848646147E14AB2ECF /* ScrapsApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 365AA7C8FA6548E66C018EEF /* ScrapsApp.swift */; };
+		C58749E5413A79174B3F81E3 /* StatusBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A967B68CBD0E589F3DF924E /* StatusBarController.swift */; };
 		DB1EA59A18CDC30B12A2AD38 /* MenuBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4FFE6C21A95608F761AFFF4 /* MenuBarView.swift */; };
 		F06F60B75F7EA0E8087DDE20 /* NotePanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34EA7826014B629E47098A81 /* NotePanel.swift */; };
 /* End PBXBuildFile section */
@@ -28,6 +29,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		0A967B68CBD0E589F3DF924E /* StatusBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusBarController.swift; sourceTree = "<group>"; };
 		22B09D62FE3EFA177C5D6DE4 /* NoteEditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteEditorView.swift; sourceTree = "<group>"; };
 		34EA7826014B629E47098A81 /* NotePanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotePanel.swift; sourceTree = "<group>"; };
 		365AA7C8FA6548E66C018EEF /* ScrapsApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScrapsApp.swift; sourceTree = "<group>"; };
@@ -70,6 +72,7 @@
 			isa = PBXGroup;
 			children = (
 				90E92D24708A31B3E55D7CBC /* NoteManager.swift */,
+				0A967B68CBD0E589F3DF924E /* StatusBarController.swift */,
 				A16183AEDB532507302E6936 /* WindowManager.swift */,
 			);
 			path = Services;
@@ -203,6 +206,7 @@
 				7C2D0294D5510E4FB10D3526 /* NoteManager.swift in Sources */,
 				F06F60B75F7EA0E8087DDE20 /* NotePanel.swift in Sources */,
 				ACF025848646147E14AB2ECF /* ScrapsApp.swift in Sources */,
+				C58749E5413A79174B3F81E3 /* StatusBarController.swift in Sources */,
 				41994A3D70D1A2C76AA68CDF /* WindowManager.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
