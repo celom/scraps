@@ -5,6 +5,37 @@ struct NoteEditorView: View {
     var onSave: () -> Void = {}
 
     var body: some View {
+        VStack(spacing: 0) {
+            toolbar
+            Divider()
+            if note.isMarkdownPreview {
+                markdownPreview
+            } else {
+                editor
+            }
+        }
+    }
+
+    private var toolbar: some View {
+        HStack {
+            Spacer()
+            Button(action: {
+                note.isMarkdownPreview.toggle()
+                onSave()
+            }) {
+                Image(systemName: note.isMarkdownPreview ? "pencil" : "eye")
+                    .font(.system(size: 12))
+                    .foregroundStyle(.secondary)
+            }
+            .buttonStyle(.plain)
+            .help(note.isMarkdownPreview ? "Edit" : "Preview Markdown")
+            .keyboardShortcut("m", modifiers: .command)
+        }
+        .padding(.horizontal, 8)
+        .padding(.vertical, 4)
+    }
+
+    private var editor: some View {
         TextEditor(text: $note.content)
             .font(.system(size: note.fontSize))
             .scrollContentBackground(.hidden)
@@ -13,5 +44,14 @@ struct NoteEditorView: View {
                 note.updatedAt = .now
                 onSave()
             }
+    }
+
+    private var markdownPreview: some View {
+        ScrollView {
+            Text(MarkdownRenderer.render(note.content, fontSize: note.fontSize))
+                .textSelection(.enabled)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(8)
+        }
     }
 }

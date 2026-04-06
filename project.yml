@@ -9,6 +9,11 @@ settings:
   SWIFT_VERSION: "6.0"
   MACOSX_DEPLOYMENT_TARGET: "26.0"
 
+packages:
+  swift-markdown:
+    url: https://github.com/swiftlang/swift-markdown.git
+    from: "0.5.0"
+
 targets:
   Scraps:
     type: application
@@ -22,6 +27,9 @@ targets:
         CFBundleDisplayName: Scraps
         CFBundleShortVersionString: "0.1.0"
         CFBundleVersion: "1"
+    dependencies:
+      - package: swift-markdown
+        product: Markdown
     settings:
       PRODUCT_BUNDLE_IDENTIFIER: com.celom.scraps
       INFOPLIST_FILE: Scraps/Resources/Info.plist
