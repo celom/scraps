@@ -25,7 +25,7 @@ final class StatusBarController {
         )
 
         if let button = statusItem.button {
-            button.image = NSImage(systemSymbolName: "note.text", accessibilityDescription: "Scraps")
+            button.image = NSImage(systemSymbolName: "brain.head.profile", accessibilityDescription: "Scraps")
             button.action = #selector(handleClick(_:))
             button.target = self
             button.sendAction(on: [.leftMouseUp, .rightMouseUp])
