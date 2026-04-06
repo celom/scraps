@@ -65,9 +65,8 @@ final class WindowManager {
 
     func updateWindowLevel(for note: Note) {
         guard let panel = panels[note.persistentModelID] else { return }
-        panel.level = note.isPinned
-            ? NSWindow.Level(rawValue: Int(CGWindowLevelForKey(.desktopWindow)) + 1)
-            : .floating
+        panel.isFloatingPanel = !note.isPinned
+        panel.level = note.isPinned ? .normal : .floating
     }
 
     private func savePosition(for noteID: PersistentIdentifier, frame: NSRect) {

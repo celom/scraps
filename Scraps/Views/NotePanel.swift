@@ -10,19 +10,14 @@ final class NotePanel: NSPanel {
             defer: false
         )
 
-        isFloatingPanel = true
-        level = note.isPinned
-            ? NSWindow.Level(rawValue: Int(CGWindowLevelForKey(.desktopWindow)) + 1)
-            : .floating
+        isFloatingPanel = !note.isPinned
+        level = note.isPinned ? .normal : .floating
         titlebarAppearsTransparent = true
         titleVisibility = .hidden
         isMovableByWindowBackground = true
         isOpaque = false
         backgroundColor = .clear
         hasShadow = true
-        hidesOnDeactivate = false
-        acceptsMouseMovedEvents = true
-        collectionBehavior = [.canJoinAllSpaces, .stationary]
 
         let hostingView = NSHostingView(
             rootView: NoteEditorView(
@@ -42,16 +37,5 @@ final class NotePanel: NSPanel {
         } else {
             center()
         }
-    }
-
-    override var canBecomeKey: Bool { true }
-    override var canBecomeMain: Bool { true }
-
-    override func sendEvent(_ event: NSEvent) {
-        // Ensure clicks on the panel activate it even at desktop level
-        if event.type == .leftMouseDown {
-            makeKey()
-        }
-        super.sendEvent(event)
     }
 }

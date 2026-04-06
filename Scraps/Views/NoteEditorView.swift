@@ -31,7 +31,7 @@ struct NoteEditorView: View {
                         .foregroundStyle(note.isPinned ? .primary : .secondary)
                 }
                 .buttonStyle(.plain)
-                .help(note.isPinned ? "Unpin from Desktop" : "Pin to Desktop")
+                .help(note.isPinned ? "Float Above Windows" : "Stay Behind Windows")
             }
 
             Spacer()
