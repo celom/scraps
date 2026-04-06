@@ -5,7 +5,7 @@ final class NotePanel: NSPanel {
     init(note: Note, noteManager: NoteManager, windowManager: WindowManager) {
         super.init(
             contentRect: NSRect(x: note.positionX, y: note.positionY, width: 300, height: 200),
-            styleMask: [.titled, .closable, .resizable, .nonactivatingPanel, .fullSizeContentView],
+            styleMask: [.titled, .closable, .resizable, .fullSizeContentView, .nonactivatingPanel],
             backing: .buffered,
             defer: false
         )
@@ -20,6 +20,9 @@ final class NotePanel: NSPanel {
         isOpaque = false
         backgroundColor = .clear
         hasShadow = true
+        hidesOnDeactivate = false
+        acceptsMouseMovedEvents = true
+        collectionBehavior = [.canJoinAllSpaces, .stationary]
 
         let hostingView = NSHostingView(
             rootView: NoteEditorView(
@@ -39,5 +42,16 @@ final class NotePanel: NSPanel {
         } else {
             center()
         }
+    }
+
+    override var canBecomeKey: Bool { true }
+    override var canBecomeMain: Bool { true }
+
+    override func sendEvent(_ event: NSEvent) {
+        // Ensure clicks on the panel activate it even at desktop level
+        if event.type == .leftMouseDown {
+            makeKey()
+        }
+        super.sendEvent(event)
     }
 }
